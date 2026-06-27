@@ -61,7 +61,9 @@ npm run build
 npm run preview
 ```
 
-Deploy `dist/` with the included `public/_headers` for Tarsk embedding. See [`../starter/AGENTS.md`](../starter/AGENTS.md) for WebMCP architecture details.
+Production output goes to `dist/`. Deploy the **contents** of `dist/` (not the folder itself) to any static host that supports custom headers (for example Cloudflare Pages with `_headers`). Asset URLs are relative (`base: './'`), so the widget works at the site root or under a subpath such as `/bar-graph/`.
+
+After deploying, confirm the browser can load `./assets/index-*.js` from the same URL you give Tarsk — a 404 on that script produces the handshake timeout error.
 
 ## Project structure
 

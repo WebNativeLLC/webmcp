@@ -194,6 +194,9 @@ export function initializeWidgetBridge(): void {
     }
   })
   wlog('widget bridge initialized; listening for getTools / callTool')
-  // Tell the parent the listener is attached and we are at our real origin.
+}
+
+/** Call after tools are registered so the parent handshake sees them immediately. */
+export function announceWidgetReady(): void {
   announceReady()
 }
