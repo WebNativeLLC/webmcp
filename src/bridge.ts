@@ -10,6 +10,7 @@
 const WIDGET_MESSAGE_SOURCE = 'tarsk-webmcp'
 
 const WIDGET_MESSAGE_ACTIONS = {
+  widgetReady: 'widgetReady',
   getTools: 'getTools',
   getToolsResponse: 'getToolsResponse',
   callTool: 'callTool',
@@ -149,6 +150,18 @@ async function handleCallTool(event: MessageEvent, request: CallToolRequest): Pr
   }
 }
 
+function announceReady(): void {
+  const parent = window.parent
+  if (!parent || parent === window) {
+    wlog('not embedded in a parent frame; skipping widgetReady beacon')
+    return
+  }
+  // Target origin "*" is fine: the beacon carries no sensitive data and the
+  // widget does not reliably know the parent's origin.
+  wlog('-> widgetReady beacon')
+  parent.postMessage({ source: WIDGET_MESSAGE_SOURCE, action: WIDGET_MESSAGE_ACTIONS.widgetReady }, '*')
+}
+
 export function initializeWidgetBridge(): void {
   window.addEventListener('message', (event: MessageEvent) => {
     const data = event.data
@@ -161,4 +174,6 @@ export function initializeWidgetBridge(): void {
     }
   })
   wlog('widget bridge initialized; listening for getTools / callTool')
+  // Tell the parent the listener is attached and we are at our real origin.
+  announceReady()
 }
