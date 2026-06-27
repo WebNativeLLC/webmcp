@@ -1,6 +1,6 @@
 /* Sky gradients per weather theme */
-.weather-bg--loading {
-  background: linear-gradient(180deg, #dbeafe 0%, #eff6ff 100%);
+.weather-bg--skeleton {
+  background: linear-gradient(180deg, #e2e8f0 0%, #f1f5f9 55%, #f8fafc 100%);
 }
 
 .weather-bg--clear {

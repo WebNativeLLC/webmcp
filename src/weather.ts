@@ -1,5 +1,3 @@
-export const DEFAULT_ZIP = '90210'
-
 export type WeatherTheme =
   | 'clear'
   | 'partly-cloudy'
@@ -140,6 +138,32 @@ function renderWeatherScene(theme: WeatherTheme): string {
     case 'thunderstorm':
       return `<div class="weather-scene" aria-hidden="true">${cloud1}${cloud2}${cloud3}${rain}${lightning}</div>`
   }
+}
+
+export function renderWeatherSkeleton(): string {
+  return `
+    <article class="weather-widget weather-skeleton" aria-busy="true" aria-label="Loading weather">
+      <div class="weather-main">
+        <div class="skeleton skeleton-location"></div>
+        <div class="skeleton skeleton-temp"></div>
+        <div class="skeleton skeleton-condition"></div>
+      </div>
+      <dl class="weather-details skeleton-details">
+        <div>
+          <div class="skeleton skeleton-label"></div>
+          <div class="skeleton skeleton-value"></div>
+        </div>
+        <div>
+          <div class="skeleton skeleton-label"></div>
+          <div class="skeleton skeleton-value"></div>
+        </div>
+        <div>
+          <div class="skeleton skeleton-label"></div>
+          <div class="skeleton skeleton-value"></div>
+        </div>
+      </dl>
+    </article>
+  `
 }
 
 export function renderWeatherWidget(weather: WeatherInfo): string {

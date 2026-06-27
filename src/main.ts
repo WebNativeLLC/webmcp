@@ -2,9 +2,9 @@ import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill'
 import './style.css'
 import { initializeWidgetBridge } from './bridge.ts'
 import {
-  DEFAULT_ZIP,
   fetchWeather,
   formatWeatherText,
+  renderWeatherSkeleton,
   renderWeatherWidget,
 } from './weather.ts'
 
@@ -20,13 +20,13 @@ try {
 }
 
 const app = document.querySelector<HTMLDivElement>('#app')!
-app.innerHTML = `<div id="weather" class="weather-state" aria-live="polite">Loading weather for ${DEFAULT_ZIP}…</div>`
+app.innerHTML = `<div id="weather" class="weather-state" aria-live="polite"></div>`
 
 const weatherEl = app.querySelector<HTMLDivElement>('#weather')!
 
-function showLoading(zipcode: string) {
-  weatherEl.className = 'weather-state weather-bg weather-bg--loading'
-  weatherEl.textContent = `Loading weather for ${zipcode}…`
+function showSkeleton() {
+  weatherEl.className = 'weather-state weather-bg weather-bg--skeleton'
+  weatherEl.innerHTML = renderWeatherSkeleton()
 }
 
 function showWeather(weather: Awaited<ReturnType<typeof fetchWeather>>) {
@@ -40,7 +40,7 @@ function showError(message: string) {
 }
 
 async function loadWeather(zipcode: string) {
-  showLoading(zipcode)
+  showSkeleton()
   const weather = await fetchWeather(zipcode)
   showWeather(weather)
   return weather
@@ -78,4 +78,4 @@ document.modelContext.registerTool({
   },
 })
 
-void loadWeather(DEFAULT_ZIP).catch(() => {})
+showSkeleton()
