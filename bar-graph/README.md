@@ -62,3 +62,16 @@ npm run preview
 ```
 
 Deploy `dist/` with the included `public/_headers` for Tarsk embedding. See [`../starter/AGENTS.md`](../starter/AGENTS.md) for WebMCP architecture details.
+
+## Project structure
+
+```
+src/
+  main.ts       Entry point — polyfill, bridge, tool registration
+  bridge.ts     Parent ↔ iframe postMessage protocol
+  bar-graph.ts  Parse, render, and format chart data
+  style.css     Widget layout and chart styles
+public/
+  _headers      Cross-origin isolation headers for embedding
+  favicon.svg
+```

@@ -1,15 +1,19 @@
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill'
 import './style.css'
-import { initializeWidgetBridge } from './bridge.ts'
 import {
-  formatToolResponse,
+  barGraphStateClassName,
+  formatBarGraphText,
   parseBarGraphInput,
+  renderBarGraph,
   renderEmpty,
-  renderSkeleton,
-  renderWidget,
+  SAMPLE_BAR_GRAPH_STATE,
   type BarGraphState,
-} from './widget.ts'
+} from './bar-graph.ts'
+import { initializeWidgetBridge } from './bridge.ts'
 
+// Attach the parent<->iframe message bridge FIRST and unconditionally, so the
+// widget always answers getTools/callTool even if polyfill init below throws
+// (otherwise the parent's handshake would silently time out).
 initializeWidgetBridge()
 
 try {
@@ -19,28 +23,28 @@ try {
 }
 
 const app = document.querySelector<HTMLDivElement>('#app')!
-app.innerHTML = `<div id="widget-root" class="widget-root" aria-live="polite"></div>`
+app.innerHTML = `<div id="bar-graph" class="bar-graph-state" aria-live="polite"></div>`
 
-const rootEl = app.querySelector<HTMLDivElement>('#widget-root')!
+const barGraphEl = app.querySelector<HTMLDivElement>('#bar-graph')!
 
-function showSkeleton() {
-  rootEl.className = 'widget-root widget-root--loading'
-  rootEl.innerHTML = renderSkeleton()
-}
-
-function showChart(state: BarGraphState) {
-  rootEl.className = 'widget-root'
-  rootEl.innerHTML = renderWidget(state)
+function showBarGraph(state: BarGraphState) {
+  barGraphEl.className = barGraphStateClassName(state)
+  barGraphEl.innerHTML = renderBarGraph(state)
 }
 
 function showEmpty() {
-  rootEl.className = 'widget-root widget-root--empty'
-  rootEl.innerHTML = renderEmpty()
+  barGraphEl.className = 'bar-graph-state bar-graph-state--empty'
+  barGraphEl.innerHTML = renderEmpty()
 }
 
 function showError(message: string) {
-  rootEl.className = 'widget-root widget-root--error'
-  rootEl.textContent = message
+  barGraphEl.className = 'bar-graph-state bar-graph-state--error'
+  barGraphEl.textContent = message
+}
+
+function loadBarGraph(state: BarGraphState): BarGraphState {
+  showBarGraph(state)
+  return state
 }
 
 document.modelContext.registerTool({
@@ -116,11 +120,9 @@ document.modelContext.registerTool({
   async execute(args) {
     try {
       const { state } = parseBarGraphInput(args)
-      showSkeleton()
-      await new Promise((resolve) => setTimeout(resolve, 200))
-      showChart(state)
+      const chart = loadBarGraph(state)
       return {
-        content: [{ type: 'text', text: formatToolResponse(state) }],
+        content: [{ type: 'text', text: formatBarGraphText(chart) }],
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Invalid bar graph input'
@@ -134,3 +136,11 @@ document.modelContext.registerTool({
 })
 
 showEmpty()
+
+barGraphEl.addEventListener('click', (event) => {
+  const target = event.target
+  if (!(target instanceof Element)) return
+  if (target.closest('#load-sample-chart')) {
+    loadBarGraph(SAMPLE_BAR_GRAPH_STATE)
+  }
+})

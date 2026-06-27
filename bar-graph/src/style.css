@@ -6,7 +6,6 @@
   --accent: #2563eb;
   --error: #dc2626;
   --error-bg: rgba(220, 38, 38, 0.08);
-  --track: rgba(15, 23, 42, 0.06);
   --bar-radius: 8px;
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -33,7 +32,8 @@ body {
   min-height: 100svh;
 }
 
-.widget-root {
+.bar-graph-state {
+  position: relative;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -42,30 +42,57 @@ body {
   width: 100%;
   height: 100%;
   min-height: 100svh;
-  padding: clamp(16px, 3vw, 32px);
+  padding: clamp(20px, 4vw, 40px);
+  overflow: hidden;
+  text-align: center;
+  color: var(--text);
   background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
+  transition: background 0.4s ease;
 }
 
-.widget-root--loading {
+.bar-graph-state:has(.bar-chart:not(.bar-chart-skeleton)) {
+  padding: clamp(16px, 3vw, 32px);
+}
+
+.bar-graph-state--skeleton {
   background: linear-gradient(180deg, #e2e8f0 0%, #f8fafc 100%);
 }
 
-.widget-root--error {
+.bar-graph-state--error {
   color: var(--error);
-  background: var(--error-bg);
-  text-align: center;
+  background: var(--error-bg) !important;
   padding: 2rem;
 }
 
-.widget-root--empty {
+.bar-graph-state--empty {
   text-align: center;
 }
 
 .bar-chart-empty__title {
   margin: 0 0 12px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-h);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.bar-chart-empty__title:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+.bar-chart-empty__title:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 .bar-chart-empty__hint {
@@ -163,83 +190,85 @@ body {
 
 .bar-chart__row {
   display: grid;
-  grid-template-columns: minmax(4rem, 8rem) 1fr auto;
+  grid-template-columns: minmax(4rem, 7rem) 1fr;
   align-items: center;
-  gap: clamp(8px, 2vw, 16px);
+  gap: clamp(12px, 2vw, 20px);
 }
 
-.bar-chart--horizontal .bar-chart__bar {
+.bar-chart__bar-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1.5vw, 10px);
+  min-width: 0;
+}
+
+.bar-graph-state--horizontal .bar-chart__bar {
   height: clamp(1.25rem, 3vh, 1.75rem);
-  border-radius: 0 var(--bar-radius) var(--bar-radius) 0;
-  min-height: 0;
-}
-
-.bar-chart__track {
-  background: var(--track);
   border-radius: var(--bar-radius);
-  overflow: hidden;
-  min-height: clamp(1.25rem, 3vh, 1.75rem);
+  min-width: 4px;
+  min-height: 0;
+  flex-shrink: 0;
 }
 
-.bar-chart--horizontal .bar-chart__label {
-  text-align: right;
+.bar-graph-state--horizontal .bar-chart__label {
+  text-align: left;
 }
 
-.bar-chart--horizontal .bar-chart__value {
-  min-width: 3rem;
-  text-align: right;
+.bar-graph-state--horizontal .bar-chart__value {
+  flex-shrink: 0;
+  text-align: left;
 }
 
 /* Color schemes */
-.bar-chart--scheme-default .bar-chart__bar-group:nth-child(6n + 1) .bar-chart__bar,
-.bar-chart--scheme-default .bar-chart__row:nth-child(6n + 1) .bar-chart__bar {
+.bar-graph-state--scheme-default .bar-chart__bar-group:nth-child(6n + 1) .bar-chart__bar,
+.bar-graph-state--scheme-default .bar-chart__row:nth-child(6n + 1) .bar-chart__bar {
   --bar-color: #2563eb;
 }
 
-.bar-chart--scheme-default .bar-chart__bar-group:nth-child(6n + 2) .bar-chart__bar,
-.bar-chart--scheme-default .bar-chart__row:nth-child(6n + 2) .bar-chart__bar {
+.bar-graph-state--scheme-default .bar-chart__bar-group:nth-child(6n + 2) .bar-chart__bar,
+.bar-graph-state--scheme-default .bar-chart__row:nth-child(6n + 2) .bar-chart__bar {
   --bar-color: #7c3aed;
 }
 
-.bar-chart--scheme-default .bar-chart__bar-group:nth-child(6n + 3) .bar-chart__bar,
-.bar-chart--scheme-default .bar-chart__row:nth-child(6n + 3) .bar-chart__bar {
+.bar-graph-state--scheme-default .bar-chart__bar-group:nth-child(6n + 3) .bar-chart__bar,
+.bar-graph-state--scheme-default .bar-chart__row:nth-child(6n + 3) .bar-chart__bar {
   --bar-color: #0891b2;
 }
 
-.bar-chart--scheme-default .bar-chart__bar-group:nth-child(6n + 4) .bar-chart__bar,
-.bar-chart--scheme-default .bar-chart__row:nth-child(6n + 4) .bar-chart__bar {
+.bar-graph-state--scheme-default .bar-chart__bar-group:nth-child(6n + 4) .bar-chart__bar,
+.bar-graph-state--scheme-default .bar-chart__row:nth-child(6n + 4) .bar-chart__bar {
   --bar-color: #059669;
 }
 
-.bar-chart--scheme-default .bar-chart__bar-group:nth-child(6n + 5) .bar-chart__bar,
-.bar-chart--scheme-default .bar-chart__row:nth-child(6n + 5) .bar-chart__bar {
+.bar-graph-state--scheme-default .bar-chart__bar-group:nth-child(6n + 5) .bar-chart__bar,
+.bar-graph-state--scheme-default .bar-chart__row:nth-child(6n + 5) .bar-chart__bar {
   --bar-color: #d97706;
 }
 
-.bar-chart--scheme-default .bar-chart__bar-group:nth-child(6n + 6) .bar-chart__bar,
-.bar-chart--scheme-default .bar-chart__row:nth-child(6n + 6) .bar-chart__bar {
+.bar-graph-state--scheme-default .bar-chart__bar-group:nth-child(6n + 6) .bar-chart__bar,
+.bar-graph-state--scheme-default .bar-chart__row:nth-child(6n + 6) .bar-chart__bar {
   --bar-color: #db2777;
 }
 
-.bar-chart--scheme-blue .bar-chart__bar {
+.bar-graph-state--scheme-blue .bar-chart__bar {
   --bar-color: #2563eb;
 }
 
-.bar-chart--scheme-green .bar-chart__bar {
+.bar-graph-state--scheme-green .bar-chart__bar {
   --bar-color: #059669;
 }
 
-.bar-chart--scheme-warm .bar-chart__bar-group:nth-child(odd) .bar-chart__bar,
-.bar-chart--scheme-warm .bar-chart__row:nth-child(odd) .bar-chart__bar {
+.bar-graph-state--scheme-warm .bar-chart__bar-group:nth-child(odd) .bar-chart__bar,
+.bar-graph-state--scheme-warm .bar-chart__row:nth-child(odd) .bar-chart__bar {
   --bar-color: #ea580c;
 }
 
-.bar-chart--scheme-warm .bar-chart__bar-group:nth-child(even) .bar-chart__bar,
-.bar-chart--scheme-warm .bar-chart__row:nth-child(even) .bar-chart__bar {
+.bar-graph-state--scheme-warm .bar-chart__bar-group:nth-child(even) .bar-chart__bar,
+.bar-graph-state--scheme-warm .bar-chart__row:nth-child(even) .bar-chart__bar {
   --bar-color: #dc2626;
 }
 
-.bar-chart--scheme-mono .bar-chart__bar {
+.bar-graph-state--scheme-mono .bar-chart__bar {
   --bar-color: #475569;
 }
 
@@ -262,16 +291,27 @@ body {
   border-radius: 999px;
 }
 
-.bar-chart--loading .bar-chart__bars {
+.bar-chart-skeleton .bar-chart__bars {
   align-items: flex-end;
   border-bottom-color: rgba(15, 23, 42, 0.08);
 }
 
-.skeleton-bar {
+.skeleton-bar-v {
   flex: 1 1 0;
   max-width: 4rem;
   min-height: 4px;
   border-radius: var(--bar-radius) var(--bar-radius) 0 0;
+}
+
+.skeleton-label-h {
+  height: 0.9375rem;
+  border-radius: 999px;
+}
+
+.skeleton-bar-h {
+  height: clamp(1.25rem, 3vh, 1.75rem);
+  border-radius: var(--bar-radius);
+  min-width: 4px;
 }
 
 @keyframes skeleton-shimmer {
@@ -293,12 +333,7 @@ body {
 
 @media (max-width: 480px) {
   .bar-chart__row {
-    grid-template-columns: minmax(3rem, 5rem) 1fr;
-  }
-
-  .bar-chart--horizontal .bar-chart__value {
-    grid-column: 2;
-    text-align: left;
-    margin-top: -4px;
+    grid-template-columns: minmax(3.5rem, 5rem) 1fr;
+    gap: 10px;
   }
 }

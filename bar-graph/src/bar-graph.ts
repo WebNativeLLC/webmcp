@@ -250,10 +250,10 @@ function renderHorizontalBars(
       return `
         <div class="bar-chart__row" style="--bar-index: ${index}">
           <span class="bar-chart__label">${escapeHtml(point.title)}</span>
-          <div class="bar-chart__track">
+          <div class="bar-chart__bar-row">
             <div class="bar-chart__bar" style="width: ${width}%"></div>
+            ${valueHtml}
           </div>
-          ${valueHtml}
         </div>
       `
     })
@@ -262,7 +262,7 @@ function renderHorizontalBars(
   return `<div class="bar-chart__plot bar-chart__plot--horizontal">${rows}</div>`
 }
 
-export function renderWidget(state: BarGraphState): string {
+export function renderBarGraph(state: BarGraphState): string {
   const sorted = sortBarData(state.data, state.options.sort)
   const max = scaleMax(sorted, state.options.maxValue)
   const { options } = state
@@ -276,10 +276,7 @@ export function renderWidget(state: BarGraphState): string {
       : renderVerticalBars(sorted, options, max)
 
   return `
-    <figure
-      class="bar-chart bar-chart--${options.orientation} bar-chart--scheme-${options.colorScheme}"
-      aria-label="${escapeHtml(options.chartTitle ?? 'Bar chart')}"
-    >
+    <figure class="bar-chart" aria-label="${escapeHtml(options.chartTitle ?? 'Bar chart')}">
       ${titleHtml}
       ${plot}
     </figure>
@@ -289,26 +286,71 @@ export function renderWidget(state: BarGraphState): string {
 export function renderEmpty(): string {
   return `
     <article class="bar-chart-empty">
-      <p class="bar-chart-empty__title">Bar graph widget</p>
-      <p class="bar-chart-empty__hint">Call <code>show-bar-graph</code> with a <code>data</code> array of <code>{ title, value }</code> objects.</p>
+      <button type="button" class="bar-chart-empty__title" id="load-sample-chart">
+        Bar graph widget
+      </button>
+      <p class="bar-chart-empty__hint">Click the title for a sample chart, or call <code>show-bar-graph</code> with a <code>data</code> array of <code>{ title, value }</code> objects.</p>
     </article>
   `
 }
 
-export function renderSkeleton(): string {
+export const SAMPLE_BAR_GRAPH_STATE: BarGraphState = {
+  data: [
+    { title: 'Alpha', value: 42 },
+    { title: 'Beta', value: 68 },
+    { title: 'Gamma', value: 55 },
+    { title: 'Delta', value: 31 },
+  ],
+  options: {
+    chartTitle: 'Sample bar graph',
+    orientation: 'horizontal',
+    showValues: true,
+    valuePrefix: '',
+    valueSuffix: '',
+    sort: 'none',
+    colorScheme: 'default',
+    decimalPlaces: 0,
+  },
+}
+
+export function renderBarGraphSkeleton(orientation: BarOrientation = 'horizontal'): string {
+  if (orientation === 'horizontal') {
+    return `
+      <article class="bar-chart bar-chart-skeleton" aria-busy="true" aria-label="Loading chart">
+        <div class="skeleton skeleton-title"></div>
+        <div class="bar-chart__plot bar-chart__plot--horizontal">
+          ${[72, 48, 90, 56]
+            .map(
+              (width) => `
+            <div class="bar-chart__row">
+              <div class="skeleton skeleton-label-h"></div>
+              <div class="bar-chart__bar-row">
+                <div class="skeleton skeleton-bar-h" style="width: ${width}%"></div>
+              </div>
+            </div>
+          `,
+            )
+            .join('')}
+        </div>
+      </article>
+    `
+  }
+
   return `
-    <article class="bar-chart bar-chart--vertical bar-chart--loading" aria-busy="true" aria-label="Loading chart">
+    <article class="bar-chart bar-chart-skeleton" aria-busy="true" aria-label="Loading chart">
       <div class="skeleton skeleton-title"></div>
       <div class="bar-chart__plot bar-chart__plot--vertical">
         <div class="bar-chart__bars">
-          ${[72, 48, 90, 56].map((h) => `<div class="skeleton skeleton-bar" style="height: ${h}%"></div>`).join('')}
+          ${[72, 48, 90, 56]
+            .map((height) => `<div class="skeleton skeleton-bar-v" style="height: ${height}%"></div>`)
+            .join('')}
         </div>
       </div>
     </article>
   `
 }
 
-export function formatToolResponse(state: BarGraphState): string {
+export function formatBarGraphText(state: BarGraphState): string {
   const sorted = sortBarData(state.data, state.options.sort)
   const lines = sorted.map(
     (point) =>
@@ -317,4 +359,9 @@ export function formatToolResponse(state: BarGraphState): string {
   const heading = state.options.chartTitle ? `${state.options.chartTitle}\n` : ''
   const meta = `(${state.options.orientation}, ${sorted.length} bars, sort: ${state.options.sort})`
   return `${heading}${lines.join(', ')} ${meta}`.trim()
+}
+
+export function barGraphStateClassName(state: BarGraphState): string {
+  const { orientation, colorScheme } = state.options
+  return `bar-graph-state bar-graph-state--${orientation} bar-graph-state--scheme-${colorScheme}`
 }
