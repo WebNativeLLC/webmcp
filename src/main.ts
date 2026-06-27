@@ -20,22 +20,17 @@ try {
 }
 
 const app = document.querySelector<HTMLDivElement>('#app')!
-app.innerHTML = `
-  <main class="page">
-    <h1>Weather</h1>
-    <div id="weather" class="weather-state" aria-live="polite">Loading weather for ${DEFAULT_ZIP}…</div>
-  </main>
-`
+app.innerHTML = `<div id="weather" class="weather-state" aria-live="polite">Loading weather for ${DEFAULT_ZIP}…</div>`
 
 const weatherEl = app.querySelector<HTMLDivElement>('#weather')!
 
 function showLoading(zipcode: string) {
-  weatherEl.className = 'weather-state'
+  weatherEl.className = 'weather-state weather-bg weather-bg--loading'
   weatherEl.textContent = `Loading weather for ${zipcode}…`
 }
 
 function showWeather(weather: Awaited<ReturnType<typeof fetchWeather>>) {
-  weatherEl.className = 'weather-state'
+  weatherEl.className = `weather-state weather-bg weather-bg--${weather.theme}`
   weatherEl.innerHTML = renderWeatherWidget(weather)
 }
 
