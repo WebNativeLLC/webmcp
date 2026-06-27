@@ -28,6 +28,7 @@ Each widget is a self-contained Vite + TypeScript app. Tools are registered with
 |--------|-------------|
 | [`starter/`](./starter/) | Minimal template — copy this to start a new widget |
 | [`weather/`](./weather/) | Full example — US weather by zip code with animated UI |
+| [`bar-graph/`](./bar-graph/) | Bar chart from labeled numeric data with agent display options |
 
 Each folder is an independent npm project with its own `package.json`. There is no root workspace; `cd` into the app you want to work on.
 
