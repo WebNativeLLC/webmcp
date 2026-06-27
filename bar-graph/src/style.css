@@ -7,6 +7,7 @@
   --error: #dc2626;
   --error-bg: rgba(220, 38, 38, 0.08);
   --bar-radius: 8px;
+  --chart-pad: clamp(12px, 3vw, 24px);
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
 
@@ -29,7 +30,7 @@ body {
 
 #app {
   height: 100%;
-  min-height: 100svh;
+  min-height: 100%;
 }
 
 .bar-graph-state {
@@ -37,21 +38,17 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
   width: 100%;
   height: 100%;
-  min-height: 100svh;
-  padding: clamp(20px, 4vw, 40px);
-  overflow: hidden;
+  min-height: 100%;
+  padding: var(--chart-pad);
+  overflow: auto;
   text-align: center;
   color: var(--text);
   background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
   transition: background 0.4s ease;
-}
-
-.bar-graph-state:has(.bar-chart:not(.bar-chart-skeleton)) {
-  padding: clamp(16px, 3vw, 32px);
 }
 
 .bar-graph-state--skeleton {
@@ -61,10 +58,12 @@ body {
 .bar-graph-state--error {
   color: var(--error);
   background: var(--error-bg) !important;
+  justify-content: center;
   padding: 2rem;
 }
 
 .bar-graph-state--empty {
+  justify-content: center;
   text-align: center;
 }
 
@@ -108,14 +107,20 @@ body {
 
 .bar-chart {
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
   width: 100%;
-  max-width: 56rem;
+  min-width: 0;
+  min-height: 0;
   margin: 0;
+  padding: clamp(8px, 2vw, 16px);
 }
 
 .bar-chart__title {
-  margin: 0 0 clamp(16px, 3vh, 28px);
-  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  flex-shrink: 0;
+  margin: 0 0 clamp(12px, 2vh, 20px);
+  font-size: clamp(1.125rem, 2.5vw, 1.625rem);
   font-weight: 600;
   color: var(--text-h);
   text-align: center;
@@ -124,7 +129,9 @@ body {
 .bar-chart__plot--vertical {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   width: 100%;
+  min-height: 0;
 }
 
 .bar-graph-state--vertical .bar-chart__bars {
@@ -134,9 +141,10 @@ body {
   gap: clamp(6px, 1.5vw, 14px);
   box-sizing: border-box;
   width: 100%;
-  height: min(50vh, 24rem);
-  min-height: 12rem;
-  padding: 0 clamp(4px, 1vw, 12px);
+  flex: 1 1 auto;
+  min-height: 10rem;
+  max-height: 100%;
+  padding: clamp(4px, 1vh, 8px) clamp(4px, 1vw, 8px);
   border-bottom: 2px solid var(--border);
   overflow-x: auto;
 }
@@ -188,7 +196,7 @@ body {
 }
 
 .bar-chart__value {
-  font-size: clamp(0.75rem, 1.6vw, 0.875rem);
+  font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
   font-weight: 600;
   color: var(--text-h);
   white-space: nowrap;
@@ -197,38 +205,47 @@ body {
 .bar-chart__plot--horizontal {
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 2vh, 18px);
+  flex: 1 1 auto;
+  gap: clamp(8px, 1.4vh, 14px);
+  min-height: 0;
+  padding: clamp(4px, 1vh, 10px) clamp(2px, 0.5vw, 4px);
+  overflow-y: auto;
 }
 
 .bar-chart__row {
   display: grid;
-  grid-template-columns: minmax(4rem, 7rem) 1fr;
+  grid-template-columns: minmax(3.5rem, 7.5rem) minmax(0, 1fr) auto;
   align-items: center;
-  gap: clamp(12px, 2vw, 20px);
-}
-
-.bar-chart__bar-row {
-  display: flex;
-  align-items: center;
-  gap: clamp(6px, 1.5vw, 10px);
+  gap: clamp(8px, 2vw, 16px);
   min-width: 0;
 }
 
+.bar-chart__track {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--bar-radius);
+}
+
 .bar-graph-state--horizontal .bar-chart__bar {
-  height: clamp(1.25rem, 3vh, 1.75rem);
+  display: block;
+  height: clamp(1rem, 2.5vh, 1.5rem);
   border-radius: var(--bar-radius);
   min-width: 4px;
   min-height: 0;
-  flex-shrink: 0;
 }
 
 .bar-graph-state--horizontal .bar-chart__label {
   text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(0.75rem, 1.6vw, 0.9375rem);
 }
 
 .bar-graph-state--horizontal .bar-chart__value {
   flex-shrink: 0;
-  text-align: left;
+  text-align: right;
+  padding-right: 2px;
 }
 
 /* Color schemes */
@@ -299,7 +316,7 @@ body {
 .skeleton-title {
   width: min(16rem, 50%);
   height: 1.75rem;
-  margin: 0 auto clamp(20px, 4vh, 32px);
+  margin: 0 auto clamp(12px, 2vh, 20px);
   border-radius: 999px;
 }
 
@@ -330,9 +347,15 @@ body {
 }
 
 .skeleton-bar-h {
-  height: clamp(1.25rem, 3vh, 1.75rem);
+  height: clamp(1rem, 2.5vh, 1.5rem);
   border-radius: var(--bar-radius);
   min-width: 4px;
+}
+
+.skeleton-value-h {
+  width: 2.5rem;
+  height: 0.8125rem;
+  border-radius: 999px;
 }
 
 @keyframes skeleton-shimmer {
@@ -354,7 +377,7 @@ body {
 
 @media (max-width: 480px) {
   .bar-chart__row {
-    grid-template-columns: minmax(3.5rem, 5rem) 1fr;
-    gap: 10px;
+    grid-template-columns: minmax(3rem, 5rem) minmax(0, 1fr) auto;
+    gap: 8px;
   }
 }

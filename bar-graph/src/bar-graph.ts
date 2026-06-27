@@ -250,10 +250,10 @@ function renderHorizontalBars(
       return `
         <div class="bar-chart__row" style="--bar-index: ${index}">
           <span class="bar-chart__label">${escapeHtml(point.title)}</span>
-          <div class="bar-chart__bar-row">
+          <div class="bar-chart__track">
             <div class="bar-chart__bar" style="width: ${width}%"></div>
-            ${valueHtml}
           </div>
+          ${valueHtml}
         </div>
       `
     })
@@ -324,9 +324,10 @@ export function renderBarGraphSkeleton(orientation: BarOrientation = 'horizontal
               (width) => `
             <div class="bar-chart__row">
               <div class="skeleton skeleton-label-h"></div>
-              <div class="bar-chart__bar-row">
+              <div class="bar-chart__track">
                 <div class="skeleton skeleton-bar-h" style="width: ${width}%"></div>
               </div>
+              <div class="skeleton skeleton-value-h"></div>
             </div>
           `,
             )
