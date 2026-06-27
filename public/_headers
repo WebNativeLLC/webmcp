@@ -1,5 +1,12 @@
 # Allow this widget to be embedded as a cross-origin iframe inside a
 # cross-origin-isolated (COEP: require-corp) host such as the Tarsk app.
+#
+# `require-corp` is used (not `credentialless`) because it is supported across
+# both Chromium and WebKit (Electrobun's macOS webview is WebKit, which does not
+# support the `credentialless` COEP value or anonymous iframes). The widget's own
+# cross-origin fetches (zippopotam.us, open-meteo.com) return CORS headers, so
+# they remain "CORS-ok" and are allowed under require-corp.
 /*
   Cross-Origin-Resource-Policy: cross-origin
-  Cross-Origin-Embedder-Policy: credentialless
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Opener-Policy: same-origin
