@@ -1,5 +1,6 @@
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill'
 import './style.css'
+import { initializeWidgetBridge } from './bridge.ts'
 import {
   DEFAULT_ZIP,
   fetchWeather,
@@ -8,6 +9,7 @@ import {
 } from './weather.ts'
 
 initializeWebMCPPolyfill()
+initializeWidgetBridge()
 
 document.modelContext.registerTool({
   name: 'get-weather',
