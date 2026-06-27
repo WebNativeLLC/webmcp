@@ -66,9 +66,17 @@ function isWidgetRequest(value: unknown): value is WidgetRequest {
   )
 }
 
+function wlog(...args: unknown[]): void {
+  console.info('[webmcp-widget]', ...args)
+}
+
 function reply(event: MessageEvent, message: object): void {
   const target = event.source as Window | null
-  if (!target) return
+  if (!target) {
+    console.warn('[webmcp-widget] cannot reply: event.source is null')
+    return
+  }
+  wlog('-> reply', (message as { action?: string }).action, 'to', event.origin || '*')
   target.postMessage(message, event.origin || '*')
 }
 
@@ -83,7 +91,9 @@ function parseInputSchema(raw: string | undefined): Record<string, unknown> | un
 
 async function handleGetTools(event: MessageEvent, request: GetToolsRequest): Promise<void> {
   const ctx = getModelContext()
+  if (!ctx) wlog('getTools: document.modelContext is not available')
   const rawTools = ctx ? await ctx.getTools() : []
+  wlog('getTools ->', rawTools.length, 'tool(s):', rawTools.map((t) => t.name))
   const tools = rawTools.map((tool) => ({
     name: tool.name,
     description: tool.description,
@@ -113,6 +123,7 @@ async function handleCallTool(event: MessageEvent, request: CallToolRequest): Pr
   }
 
   try {
+    wlog('callTool', request.name, 'args', request.arguments ?? {})
     const serialized = await ctx.executeTool(
       { name: request.name },
       JSON.stringify(request.arguments ?? {}),
@@ -142,10 +153,12 @@ export function initializeWidgetBridge(): void {
   window.addEventListener('message', (event: MessageEvent) => {
     const data = event.data
     if (!isWidgetRequest(data)) return
+    wlog('<- message', data.action, 'from', event.origin, { requestId: data.requestId })
     if (data.action === WIDGET_MESSAGE_ACTIONS.getTools) {
       void handleGetTools(event, data)
     } else if (data.action === WIDGET_MESSAGE_ACTIONS.callTool) {
       void handleCallTool(event, data)
     }
   })
+  wlog('widget bridge initialized; listening for getTools / callTool')
 }
