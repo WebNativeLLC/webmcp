@@ -283,23 +283,18 @@ export function renderBarGraph(state: BarGraphState): string {
   `
 }
 
-export function renderEmpty(): string {
-  return `
-    <article class="bar-chart-empty">
-      <button type="button" class="bar-chart-empty__title" id="load-sample-chart">
-        Bar graph widget
-      </button>
-      <p class="bar-chart-empty__hint">Click the title for a sample chart, or call <code>show-bar-graph</code> with a <code>data</code> array of <code>{ title, value }</code> objects.</p>
-    </article>
-  `
-}
-
 export const SAMPLE_BAR_GRAPH_STATE: BarGraphState = {
   data: [
     { title: 'Alpha', value: 42 },
     { title: 'Beta', value: 68 },
     { title: 'Gamma', value: 55 },
     { title: 'Delta', value: 31 },
+    { title: 'Epsilon', value: 74 },
+    { title: 'Zeta', value: 48 },
+    { title: 'Eta', value: 61 },
+    { title: 'Theta', value: 37 },
+    { title: 'Iota', value: 52 },
+    { title: 'Kappa', value: 45 },
   ],
   options: {
     chartTitle: 'Sample bar graph',
@@ -314,10 +309,9 @@ export const SAMPLE_BAR_GRAPH_STATE: BarGraphState = {
 }
 
 export function renderBarGraphSkeleton(orientation: BarOrientation = 'horizontal'): string {
-  if (orientation === 'horizontal') {
-    return `
-      <article class="bar-chart bar-chart-skeleton" aria-busy="true" aria-label="Loading chart">
-        <div class="skeleton skeleton-title"></div>
+  const plot =
+    orientation === 'horizontal'
+      ? `
         <div class="bar-chart__plot bar-chart__plot--horizontal">
           ${[72, 48, 90, 56]
             .map(
@@ -333,29 +327,37 @@ export function renderBarGraphSkeleton(orientation: BarOrientation = 'horizontal
             )
             .join('')}
         </div>
-      </article>
-    `
-  }
+      `
+      : `
+        <div class="bar-chart__plot bar-chart__plot--vertical">
+          <div class="bar-chart__bars">
+            ${[72, 48, 90, 56]
+              .map(
+                (height) => `
+              <div class="bar-chart__bar-group">
+                <div class="bar-chart__bar-wrap" style="--bar-pct: ${height}">
+                  <div class="skeleton skeleton-bar-v"></div>
+                </div>
+              </div>
+            `,
+              )
+              .join('')}
+          </div>
+        </div>
+      `
 
   return `
-    <article class="bar-chart bar-chart-skeleton" aria-busy="true" aria-label="Loading chart">
-      <div class="skeleton skeleton-title"></div>
-      <div class="bar-chart__plot bar-chart__plot--vertical">
-        <div class="bar-chart__bars">
-          ${[72, 48, 90, 56]
-            .map(
-              (height) => `
-            <div class="bar-chart__bar-group">
-              <div class="bar-chart__bar-wrap" style="--bar-pct: ${height}">
-                <div class="skeleton skeleton-bar-v"></div>
-              </div>
-            </div>
-          `,
-            )
-            .join('')}
-        </div>
-      </div>
-    </article>
+    <button
+      type="button"
+      class="bar-chart-skeleton-trigger"
+      id="load-sample-chart"
+      aria-label="Load sample bar graph"
+    >
+      <article class="bar-chart bar-chart-skeleton" aria-busy="true" aria-hidden="true">
+        <div class="skeleton skeleton-title"></div>
+        ${plot}
+      </article>
+    </button>
   `
 }
 

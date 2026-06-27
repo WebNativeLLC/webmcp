@@ -6,7 +6,7 @@ import {
   formatBarGraphText,
   parseBarGraphInput,
   renderBarGraph,
-  renderEmpty,
+  renderBarGraphSkeleton,
   SAMPLE_BAR_GRAPH_STATE,
   type BarGraphState,
 } from './bar-graph.ts'
@@ -27,14 +27,14 @@ app.innerHTML = `<div id="bar-graph" class="bar-graph-state" aria-live="polite">
 
 const barGraphEl = app.querySelector<HTMLDivElement>('#bar-graph')!
 
+function showSkeleton() {
+  barGraphEl.className = 'bar-graph-state bar-graph-state--skeleton bar-graph-state--horizontal'
+  barGraphEl.innerHTML = renderBarGraphSkeleton('horizontal')
+}
+
 function showBarGraph(state: BarGraphState) {
   barGraphEl.className = barGraphStateClassName(state)
   barGraphEl.innerHTML = renderBarGraph(state)
-}
-
-function showEmpty() {
-  barGraphEl.className = 'bar-graph-state bar-graph-state--empty'
-  barGraphEl.innerHTML = renderEmpty()
 }
 
 function showError(message: string) {
@@ -147,7 +147,7 @@ function registerWebMCPTools(): void {
 
 registerWebMCPTools()
 announceWidgetReady()
-showEmpty()
+showSkeleton()
 
 barGraphEl.addEventListener('click', (event) => {
   const target = event.target
