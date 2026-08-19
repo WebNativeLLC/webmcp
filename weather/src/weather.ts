@@ -107,7 +107,7 @@ export async function fetchWeather(zipcode: string): Promise<WeatherInfo> {
 }
 
 export function formatWeatherText(weather: WeatherInfo): string {
-  return `${weather.weatherDescription} in ${weather.placeName}, ${weather.state} ${weather.zipcode}: ${Math.round(weather.temperatureF)}°F (feels like ${Math.round(weather.apparentTemperatureF)}°F), humidity ${weather.humidity}%, wind ${weather.windSpeedMph} mph`
+  return `The widget is displaying "${weather.weatherDescription} in ${weather.placeName}, ${weather.state} ${weather.zipcode}: ${Math.round(weather.temperatureF)}°F (feels like ${Math.round(weather.apparentTemperatureF)}°F), humidity ${weather.humidity}%, wind ${weather.windSpeedMph} mph"`
 }
 
 function renderWeatherScene(theme: WeatherTheme): string {
