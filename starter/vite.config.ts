@@ -4,4 +4,13 @@ import { defineConfig } from 'vite'
 // (e.g. https://mcp.tarsk.io/starter/) and not only at the site root.
 export default defineConfig({
   base: './',
+  // The direct cross-origin iframe is only allowed because of the renderer's
+  // COEP, so the dev server must send this header or the iframe load is
+  // blocked and nothing renders.
+  server: {
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Resource-Policy': 'cross-origin',
+    },
+  },
 })
